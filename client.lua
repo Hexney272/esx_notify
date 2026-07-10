@@ -1,7 +1,33 @@
 local activeId = 0
 
 local function normalizeType(notifyType)
+    -- Ha number típus (nem string), akkor konvertáljuk azonnal
+    if type(notifyType) == 'number' then
+        local numericTypes = {
+            [1] = 'info',
+            [2] = 'error',
+            [3] = 'success',
+            [4] = 'warning',
+            [5] = 'info'  -- fallback
+        }
+        return numericTypes[notifyType] or 'info'
+    end
+    
     notifyType = tostring(notifyType or 'info'):lower()
+    
+    -- String-ként kapott számok kezelése
+    local numericStringTypes = {
+        ['1'] = 'info',
+        ['2'] = 'error',
+        ['3'] = 'success',
+        ['4'] = 'warning',
+        ['5'] = 'info'
+    }
+    
+    if numericStringTypes[notifyType] then
+        return numericStringTypes[notifyType]
+    end
+    
     return Config.TypeAliases[notifyType] or notifyType
 end
 

@@ -148,12 +148,13 @@ function showNotify(data) {
     const duration = Math.max(1200, Number(data.duration || DEFAULT_DURATION));
     
     // Debug logging
-    console.log('[NOTIFY DEBUG]', {
+    console.log('[NOTIFY DEBUG] Incoming notification:', {
         original_type: data.type,
         normalized_type: type,
         title_from_data: data.title,
         title_from_map: titleMap[type],
-        final_title: data.title || titleMap[type] || 'INFORMÁCIÓ'
+        message: data.message,
+        full_data: data
     });
     
     const title = sanitize(data.title || titleMap[type] || 'INFORMÁCIÓ');
