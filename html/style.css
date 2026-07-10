@@ -37,7 +37,7 @@ html, body {
     position: relative;
     width: 470px;
     min-height: 96px;
-    padding: 16px 82px 22px 105px;
+    padding: 16px 82px 22px 90px;
     border-radius: 18px;
     overflow: hidden;
     color: var(--text);
@@ -87,44 +87,21 @@ html, body {
     animation: shineSweep 2.8s ease-in-out infinite;
 }
 
-.icon-box {
-    position: absolute;
-    left: 17px;
-    top: 50%;
-    width: 72px;
-    height: 72px;
-    transform: translateY(-50%);
-    border-radius: 15px;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(145deg, rgba(18,18,18,.88), rgba(5,5,5,.72));
-    border: 1px solid rgba(213, 147, 55, .62);
-    box-shadow: inset 0 0 24px rgba(0,0,0,.46), 0 0 18px rgba(211, 143, 44, .10);
-    overflow: hidden;
-}
-
-.icon-box::before {
-    content: '';
-    position: absolute;
-    inset: 8px;
-    border-radius: 11px;
-    background: radial-gradient(circle at 38% 22%, rgba(255,255,255,.12), transparent 33%);
-}
-
 .notify-icon {
-    position: relative;
-    width: 48px;
-    height: 48px;
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    width: 62px;
+    height: 62px;
+    transform: translateY(-50%);
     object-fit: contain;
-    filter: drop-shadow(0 4px 7px rgba(0,0,0,.45));
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,.55)) drop-shadow(0 0 18px rgba(255, 215, 139, .25));
+    animation: iconFloat 3.2s ease-in-out infinite;
 }
 
-.icon-glint {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(110deg, transparent 22%, rgba(255, 255, 255, .22), transparent 55%);
-    transform: translateX(-110%);
-    animation: iconGlint 3.4s ease-in-out infinite;
+@keyframes iconFloat {
+    0%, 100% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-52%) scale(1.05); }
 }
 
 .notify-content {
@@ -166,7 +143,7 @@ html, body {
 
 .progress-track {
     position: absolute;
-    left: 105px;
+    left: 90px;
     right: 84px;
     bottom: 14px;
     height: 5px;
@@ -384,7 +361,10 @@ html, body {
 
 @keyframes progress { to { transform: scaleX(0); } }
 @keyframes shineSweep { 0%, 50% { left: -45%; } 100% { left: 112%; } }
-@keyframes iconGlint { 0%, 58% { transform: translateX(-110%); } 100% { transform: translateX(110%); } }
+@keyframes iconFloat {
+    0%, 100% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-52%) scale(1.05); }
+}
 
 @keyframes enterSuccess { 0% { opacity: 0; transform: translateY(-36px) scale(.92); filter: blur(4px); } 65% { opacity: 1; transform: translateY(3px) scale(1.015); filter: blur(0); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes enterInfo { 0% { opacity: 0; transform: translateY(-24px); filter: blur(3px); } 100% { opacity: 1; transform: translateY(0); filter: blur(0); } }
@@ -401,11 +381,10 @@ html, body {
 @keyframes exitNotify { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-18px) scale(.96); filter: blur(3px); } }
 
 @media (max-width: 1280px) {
-    .notify { width: 420px; min-height: 88px; padding-left: 94px; padding-right: 70px; }
+    .notify { width: 420px; min-height: 88px; padding-left: 80px; padding-right: 70px; }
     .notify.server, .notify.announce { width: 470px; }
-    .icon-box { width: 64px; height: 64px; }
-    .notify-icon { width: 43px; height: 43px; }
+    .notify-icon { width: 56px; height: 56px; left: 14px; }
     .notify-title { font-size: 17px; }
     .notify-message { font-size: 13px; }
-    .progress-track { left: 94px; right: 72px; }
+    .progress-track { left: 80px; right: 72px; }
 }
