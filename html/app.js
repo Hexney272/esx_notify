@@ -146,7 +146,17 @@ function showNotify(data) {
     const id = data.id || Date.now() + Math.random();
     const type = normalizeType(data.type);
     const duration = Math.max(1200, Number(data.duration || DEFAULT_DURATION));
-    const title = sanitize(data.title || titleMap[type] || titleMap.info);
+    
+    // Debug logging
+    console.log('[NOTIFY DEBUG]', {
+        original_type: data.type,
+        normalized_type: type,
+        title_from_data: data.title,
+        title_from_map: titleMap[type],
+        final_title: data.title || titleMap[type] || 'INFORMÁCIÓ'
+    });
+    
+    const title = sanitize(data.title || titleMap[type] || 'INFORMÁCIÓ');
     const message = sanitize(data.message || '');
     const icon = iconMap[type] || iconMap.info;
 

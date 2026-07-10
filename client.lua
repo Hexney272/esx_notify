@@ -40,7 +40,7 @@ local function SendNotify(data)
     if message == '' then return end
 
     if title == '' then
-        title = Config.Titles[notifyType] or Config.Titles.info or 'Információ'
+        title = Config.Titles[notifyType] or Config.Titles['info'] or 'INFORMÁCIÓ'
     end
 
     SendNUIMessage({
