@@ -167,7 +167,11 @@ function showNotify(data) {
     notify.className = `notify ${type}`;
     notify.innerHTML = `
         <div class="shine"></div>
-        <img class="notify-icon" src="${icon}" draggable="false" />
+        <div class="icon-wrapper">
+            <div class="icon-glow"></div>
+            <img class="notify-icon" src="${icon}" draggable="false" />
+            <div class="icon-shine"></div>
+        </div>
         <div class="notify-content">
             <div class="notify-title">${title}</div>
             <div class="notify-message">${message}</div>

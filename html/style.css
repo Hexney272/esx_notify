@@ -87,21 +87,84 @@ html, body {
     animation: shineSweep 2.8s ease-in-out infinite;
 }
 
-.notify-icon {
+.icon-wrapper {
     position: absolute;
-    left: 16px;
+    left: 12px;
     top: 50%;
-    width: 62px;
-    height: 62px;
+    width: 68px;
+    height: 68px;
     transform: translateY(-50%);
-    object-fit: contain;
-    filter: drop-shadow(0 6px 12px rgba(0,0,0,.55)) drop-shadow(0 0 18px rgba(255, 215, 139, .25));
+    transform-style: preserve-3d;
+    perspective: 1000px;
     animation: iconFloat 3.2s ease-in-out infinite;
 }
 
+.icon-glow {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 215, 139, .35),
+        transparent 70%
+    );
+    filter: blur(12px);
+    opacity: 0.8;
+    animation: glowPulse 2.4s ease-in-out infinite;
+}
+
+.notify-icon {
+    position: relative;
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+    z-index: 2;
+    filter: 
+        drop-shadow(0 8px 16px rgba(0,0,0,.70)) 
+        drop-shadow(0 -2px 6px rgba(255, 255, 255, .18))
+        drop-shadow(2px 2px 4px rgba(0,0,0,.45));
+    transform: translateZ(20px);
+}
+
+.icon-shine {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at 30% 25%, 
+        rgba(255, 255, 255, .4), 
+        rgba(255, 255, 255, .15) 30%,
+        transparent 60%
+    );
+    pointer-events: none;
+    z-index: 3;
+    mix-blend-mode: overlay;
+    animation: shineRotate 4s linear infinite;
+}
+
 @keyframes iconFloat {
-    0%, 100% { transform: translateY(-50%) scale(1); }
-    50% { transform: translateY(-52%) scale(1.05); }
+    0%, 100% { 
+        transform: translateY(-50%) rotateY(-8deg) rotateX(5deg) scale(1);
+    }
+    50% { 
+        transform: translateY(-53%) rotateY(8deg) rotateX(-5deg) scale(1.1);
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% { 
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.9;
+        transform: scale(1.15);
+    }
+}
+
+@keyframes shineRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .notify-content {
@@ -179,7 +242,7 @@ html, body {
         0 0 24px rgba(92, 219, 149, .18);
 }
 .notify.success .progress-bar { background: linear-gradient(90deg, #1a5d3a, #5cdb95, #8fffbf); box-shadow: 0 0 12px rgba(92, 219, 149, .50); }
-.notify.success .icon-box { border-color: rgba(92, 219, 149, .72); box-shadow: inset 0 0 24px rgba(0,0,0,.46), 0 0 18px rgba(92, 219, 149, .22); }
+.notify.success .icon-glow { background: radial-gradient(circle at center, rgba(92, 219, 149, .45), transparent 70%); }
 
 .notify.error { 
     --gold-soft: #ff5858; 
@@ -195,7 +258,7 @@ html, body {
         0 0 24px rgba(255, 88, 88, .18);
 }
 .notify.error .progress-bar { background: linear-gradient(90deg, #7d1515, #ff5858, #ff8585); box-shadow: 0 0 12px rgba(255, 88, 88, .50); }
-.notify.error .icon-box { border-color: rgba(255, 88, 88, .72); box-shadow: inset 0 0 24px rgba(0,0,0,.46), 0 0 18px rgba(255, 88, 88, .22); }
+.notify.error .icon-glow { background: radial-gradient(circle at center, rgba(255, 88, 88, .45), transparent 70%); }
 
 .notify.warning { 
     --gold-soft: #ffb347; 
@@ -211,7 +274,7 @@ html, body {
         0 0 24px rgba(255, 179, 71, .18);
 }
 .notify.warning .progress-bar { background: linear-gradient(90deg, #8f5516, #ffb347, #ffd784); box-shadow: 0 0 12px rgba(255, 179, 71, .50); }
-.notify.warning .icon-box { border-color: rgba(255, 179, 71, .72); box-shadow: inset 0 0 24px rgba(0,0,0,.46), 0 0 18px rgba(255, 179, 71, .22); }
+.notify.warning .icon-glow { background: radial-gradient(circle at center, rgba(255, 179, 71, .45), transparent 70%); }
 
 .notify.info { 
     --gold-soft: #64b5f6; 
@@ -227,7 +290,7 @@ html, body {
         0 0 24px rgba(100, 181, 246, .18);
 }
 .notify.info .progress-bar { background: linear-gradient(90deg, #1e4a7d, #64b5f6, #90caf9); box-shadow: 0 0 12px rgba(100, 181, 246, .50); }
-.notify.info .icon-box { border-color: rgba(100, 181, 246, .72); box-shadow: inset 0 0 24px rgba(0,0,0,.46), 0 0 18px rgba(100, 181, 246, .22); }
+.notify.info .icon-glow { background: radial-gradient(circle at center, rgba(100, 181, 246, .45), transparent 70%); }
 
 .notify.bank, .notify.money { 
     --gold-soft: #ffd16b; 
@@ -243,7 +306,7 @@ html, body {
         0 0 26px rgba(255, 209, 107, .22);
 }
 .notify.bank .progress-bar, .notify.money .progress-bar { background: linear-gradient(90deg, #8f6516, #ffd16b, #ffe8a1); box-shadow: 0 0 12px rgba(255, 209, 107, .55); }
-.notify.bank .icon-box, .notify.money .icon-box { border-color: rgba(255, 209, 107, .75); box-shadow: inset 0 0 24px rgba(0,0,0,.46), 0 0 20px rgba(255, 209, 107, .25); }
+.notify.bank .icon-glow, .notify.money .icon-glow { background: radial-gradient(circle at center, rgba(255, 209, 107, .50), transparent 70%); }
 
 .notify.police { 
     --gold-soft: #7db7ff; 
@@ -259,7 +322,7 @@ html, body {
         0 0 26px rgba(125, 183, 255, .22);
 }
 .notify.police .progress-bar { background: linear-gradient(90deg, #25518d, #7db7ff, #afd4ff); box-shadow: 0 0 12px rgba(125, 183, 255, .55); }
-.notify.police .icon-box { border-color: rgba(125, 183, 255, .75); box-shadow: inset 0 0 24px rgba(0,0,0,.46), 0 0 20px rgba(125, 183, 255, .25); }
+.notify.police .icon-glow { background: radial-gradient(circle at center, rgba(125, 183, 255, .50), transparent 70%); }
 
 .notify.ems { 
     --gold-soft: #ff7676; 
@@ -275,7 +338,7 @@ html, body {
         0 0 24px rgba(255, 118, 118, .20);
 }
 .notify.ems .progress-bar { background: linear-gradient(90deg, #861e25, #ff7676, #ffaaaa); box-shadow: 0 0 12px rgba(255, 118, 118, .50); }
-.notify.ems .icon-box { border-color: rgba(255, 118, 118, .72); box-shadow: inset 0 0 24px rgba(0,0,0,.46), 0 0 18px rgba(255, 118, 118, .22); }
+.notify.ems .icon-glow { background: radial-gradient(circle at center, rgba(255, 118, 118, .45), transparent 70%); }
 
 .notify.mechanic { 
     --gold-soft: #d8c4a4; 
@@ -291,7 +354,7 @@ html, body {
         0 0 22px rgba(216, 196, 164, .16);
 }
 .notify.mechanic .progress-bar { background: linear-gradient(90deg, #6b5d47, #d8c4a4, #f0e8d8); box-shadow: 0 0 12px rgba(216, 196, 164, .45); }
-.notify.mechanic .icon-box { border-color: rgba(216, 196, 164, .68); box-shadow: inset 0 0 24px rgba(0,0,0,.46), 0 0 16px rgba(216, 196, 164, .20); }
+.notify.mechanic .icon-glow { background: radial-gradient(circle at center, rgba(216, 196, 164, .40), transparent 70%); }
 
 .notify.vip { 
     --gold-soft: #ffd786; 
@@ -307,7 +370,7 @@ html, body {
         0 0 30px rgba(255, 215, 134, .26);
 }
 .notify.vip .progress-bar { background: linear-gradient(90deg, #8f6a16, #ffd786, #ffecb8); box-shadow: 0 0 14px rgba(255, 215, 134, .60); }
-.notify.vip .icon-box { border-color: rgba(255, 215, 134, .78); box-shadow: inset 0 0 24px rgba(0,0,0,.46), 0 0 22px rgba(255, 215, 134, .28); }
+.notify.vip .icon-glow { background: radial-gradient(circle at center, rgba(255, 215, 134, .55), transparent 70%); }
 
 .notify.server, .notify.announce { 
     width: 540px; 
@@ -325,7 +388,7 @@ html, body {
         0 0 28px rgba(255, 215, 134, .24);
 }
 .notify.server .progress-bar, .notify.announce .progress-bar { background: linear-gradient(90deg, #8f6516, #ffd786, #ffe8a1); box-shadow: 0 0 14px rgba(255, 215, 134, .55); }
-.notify.server .icon-box, .notify.announce .icon-box { border-color: rgba(255, 215, 134, .75); box-shadow: inset 0 0 24px rgba(0,0,0,.46), 0 0 20px rgba(255, 215, 134, .25); }
+.notify.server .icon-glow, .notify.announce .icon-glow { background: radial-gradient(circle at center, rgba(255, 215, 134, .50), transparent 70%); }
 
 .notify.illegal { 
     --gold-soft: #ff6b6b; 
@@ -341,7 +404,7 @@ html, body {
         0 0 24px rgba(255, 107, 107, .20);
 }
 .notify.illegal .progress-bar { background: linear-gradient(90deg, #7d1515, #ff6b6b, #ff9999); box-shadow: 0 0 12px rgba(255, 107, 107, .50); }
-.notify.illegal .icon-box { border-color: rgba(255, 107, 107, .72); box-shadow: inset 0 0 24px rgba(0,0,0,.46), 0 0 18px rgba(255, 107, 107, .22); }
+.notify.illegal .icon-glow { background: radial-gradient(circle at center, rgba(255, 107, 107, .45), transparent 70%); }
 
 /* Egyedi megjelenési animáció minden típushoz */
 .notify.success { animation: enterSuccess .54s cubic-bezier(.18, .9, .2, 1.18) both; }
@@ -361,9 +424,30 @@ html, body {
 
 @keyframes progress { to { transform: scaleX(0); } }
 @keyframes shineSweep { 0%, 50% { left: -45%; } 100% { left: 112%; } }
+
 @keyframes iconFloat {
-    0%, 100% { transform: translateY(-50%) scale(1); }
-    50% { transform: translateY(-52%) scale(1.05); }
+    0%, 100% { 
+        transform: translateY(-50%) rotateY(-8deg) rotateX(5deg) scale(1);
+    }
+    50% { 
+        transform: translateY(-53%) rotateY(8deg) rotateX(-5deg) scale(1.1);
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% { 
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.9;
+        transform: scale(1.15);
+    }
+}
+
+@keyframes shineRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 @keyframes enterSuccess { 0% { opacity: 0; transform: translateY(-36px) scale(.92); filter: blur(4px); } 65% { opacity: 1; transform: translateY(3px) scale(1.015); filter: blur(0); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
@@ -383,7 +467,8 @@ html, body {
 @media (max-width: 1280px) {
     .notify { width: 420px; min-height: 88px; padding-left: 80px; padding-right: 70px; }
     .notify.server, .notify.announce { width: 470px; }
-    .notify-icon { width: 56px; height: 56px; left: 14px; }
+    .icon-wrapper { width: 60px; height: 60px; left: 10px; }
+    .notify-icon { width: 60px; height: 60px; }
     .notify-title { font-size: 17px; }
     .notify-message { font-size: 13px; }
     .progress-track { left: 80px; right: 72px; }
