@@ -27,10 +27,21 @@ end
 local function SendNotify(data)
     activeId = activeId + 1
 
+    -- DEBUG: Log minden bejövő adatot
+    print('[ESX_NOTIFY DEBUG] ===== BEJÖVŐ NOTIFY =====')
+    print('[ESX_NOTIFY DEBUG] Original data.type:', data.type)
+    print('[ESX_NOTIFY DEBUG] Original data.notifyType:', data.notifyType)
+    print('[ESX_NOTIFY DEBUG] Original data.title:', data.title)
+    print('[ESX_NOTIFY DEBUG] Original data.message:', data.message)
+
     local notifyType = normalizeType(data.type or data.notifyType or 'info')
     local duration = normalizeDuration(data.duration or data.length or data.time)
     local title = cleanText(data.title)
     local message = cleanText(data.message or data.text or data.msg)
+
+    print('[ESX_NOTIFY DEBUG] Normalized type:', notifyType)
+    print('[ESX_NOTIFY DEBUG] Cleaned title:', title)
+    print('[ESX_NOTIFY DEBUG] Config.Titles[notifyType]:', Config.Titles[notifyType])
 
     if message == '' and title ~= '' then
         message = title
@@ -41,6 +52,9 @@ local function SendNotify(data)
 
     if title == '' then
         title = Config.Titles[notifyType] or Config.Titles['info'] or 'INFORMÁCIÓ'
+        print('[ESX_NOTIFY DEBUG] Title was empty, set to:', title)
+    else
+        print('[ESX_NOTIFY DEBUG] Title already set:', title)
     end
 
     SendNUIMessage({
@@ -61,34 +75,91 @@ local function SendNotify(data)
 end
 
 -- Modern export:
--- exports['esx_notify']:Notify('success', 5000, 'Üzenet', 'Cím')
-exports('Notify', function(notifyType, duration, message, title)
-    if type(notifyType) == 'table' then
-        SendNotify(notifyType)
+-- exports['esx_notify']:Notify({type='success', message='Üzenet'}) -- TABLE
+-- exports['esx_notify']:Notify('Üzenet') -- csak üzenet
+-- exports['esx_notify']:Notify('Üzenet', 'success') -- üzenet, típus
+-- exports['esx_notify']:Notify('Üzenet', 'success', 5000) -- üzenet, típus, idő
+exports('Notify', function(arg1, arg2, arg3, arg4)
+    -- Ha TABLE, akkor az az adat
+    if type(arg1) == 'table' then
+        SendNotify(arg1)
         return
     end
 
-    -- Notify('Üzenet')
-    if message == nil and duration == nil then
-        SendNotify({ type = 'info', message = notifyType })
+    -- Ha csak egy string, akkor az az üzenet (info típussal)
+    if arg2 == nil and arg3 == nil and arg4 == nil then
+        SendNotify({ type = 'info', message = arg1 })
         return
     end
 
-    -- Notify('Üzenet', 'success', 5000)
-    if type(duration) == 'string' and type(message) == 'number' then
-        SendNotify({ type = duration, duration = message, message = notifyType, title = title })
+    -- Megpróbáljuk detektálni a hívási formátumot
+    -- Ha arg2 string és ismert típus, akkor: Notify(message, type, duration, title)
+    local knownTypes = {
+        'success', 'error', 'warning', 'info', 'inform', 'money', 'bank', 
+        'police', 'ems', 'mechanic', 'vip', 'premium', 'server', 'announce', 'illegal',
+        'primary', 'notification', 'normal', 'warn', 'danger', 'cash', 'pay',
+        'lspd', 'policejob', 'ambulance', 'doctor', 'emsjob', 'mech', 'mechanicjob', 'admin', 'system', 'announcement'
+    }
+    
+    local isArg2Type = false
+    if type(arg2) == 'string' then
+        local arg2Lower = arg2:lower()
+        for _, t in ipairs(knownTypes) do
+            if t == arg2Lower then
+                isArg2Type = true
+                break
+            end
+        end
+    end
+
+    -- Ha arg2 típus, akkor: Notify(message, type, duration, title)
+    if isArg2Type then
+        SendNotify({ 
+            type = arg2, 
+            message = arg1, 
+            duration = arg3, 
+            title = arg4 
+        })
         return
     end
 
-    SendNotify({ type = notifyType, duration = duration, message = message, title = title })
+    -- Egyébként régi formátum: Notify(type, duration, message, title)
+    SendNotify({ 
+        type = arg1, 
+        duration = arg2, 
+        message = arg3, 
+        title = arg4 
+    })
 end)
 
-exports('ShowNotification', function(message, notifyType, duration, title)
-    SendNotify({ type = notifyType, duration = duration, message = message, title = title })
+-- ShowNotification általában így hívják: ShowNotification(message) vagy ShowNotification(message, type, duration)
+exports('ShowNotification', function(arg1, arg2, arg3, arg4)
+    if type(arg1) == 'table' then
+        SendNotify(arg1)
+        return
+    end
+    
+    -- Leggyakoribb: ShowNotification(message) vagy ShowNotification(message, type, duration, title)
+    SendNotify({ 
+        type = arg2 or 'info', 
+        message = arg1, 
+        duration = arg3, 
+        title = arg4 
+    })
 end)
 
-exports('Notification', function(message, notifyType, duration, title)
-    SendNotify({ type = notifyType, duration = duration, message = message, title = title })
+exports('Notification', function(arg1, arg2, arg3, arg4)
+    if type(arg1) == 'table' then
+        SendNotify(arg1)
+        return
+    end
+    
+    SendNotify({ 
+        type = arg2 or 'info', 
+        message = arg1, 
+        duration = arg3, 
+        title = arg4 
+    })
 end)
 
 -- Helper exportok RealRPG integrációkhoz.
@@ -104,26 +175,75 @@ exports('VIP', function(message, duration, title) SendNotify({ type = 'vip', mes
 exports('Server', function(message, duration, title) SendNotify({ type = 'server', message = message, duration = duration, title = title }) end)
 exports('Announce', function(message, duration, title) SendNotify({ type = 'announce', message = message, duration = duration or 8000, title = title }) end)
 
-RegisterNetEvent('esx:showNotification', function(message, notifyType, duration, title)
-    if type(message) == 'table' then
-        SendNotify(message)
+RegisterNetEvent('esx:showNotification', function(arg1, arg2, arg3, arg4)
+    if type(arg1) == 'table' then
+        SendNotify(arg1)
         return
     end
 
-    SendNotify({ type = notifyType, duration = duration, message = message, title = title })
+    -- Leggyakoribb: message, type, duration
+    SendNotify({ 
+        type = arg2 or 'info', 
+        message = arg1, 
+        duration = arg3, 
+        title = arg4 
+    })
 end)
 
-RegisterNetEvent('esx_notify:Notify', function(notifyType, duration, message, title)
-    if type(notifyType) == 'table' then
-        SendNotify(notifyType)
+RegisterNetEvent('esx_notify:Notify', function(arg1, arg2, arg3, arg4)
+    if type(arg1) == 'table' then
+        SendNotify(arg1)
         return
     end
 
-    SendNotify({ type = notifyType, duration = duration, message = message, title = title })
+    -- Detektáljuk a formátumot
+    local knownTypes = {
+        'success', 'error', 'warning', 'info', 'inform', 'money', 'bank', 
+        'police', 'ems', 'mechanic', 'vip', 'premium', 'server', 'announce', 'illegal'
+    }
+    
+    local isArg2Type = false
+    if type(arg2) == 'string' then
+        local arg2Lower = arg2:lower()
+        for _, t in ipairs(knownTypes) do
+            if t == arg2Lower then
+                isArg2Type = true
+                break
+            end
+        end
+    end
+
+    if isArg2Type then
+        -- message, type, duration, title
+        SendNotify({ 
+            type = arg2, 
+            message = arg1, 
+            duration = arg3, 
+            title = arg4 
+        })
+    else
+        -- type, duration, message, title
+        SendNotify({ 
+            type = arg1, 
+            duration = arg2, 
+            message = arg3, 
+            title = arg4 
+        })
+    end
 end)
 
-RegisterNetEvent('esx_notify:showNotification', function(message, notifyType, duration, title)
-    SendNotify({ type = notifyType, duration = duration, message = message, title = title })
+RegisterNetEvent('esx_notify:showNotification', function(arg1, arg2, arg3, arg4)
+    if type(arg1) == 'table' then
+        SendNotify(arg1)
+        return
+    end
+    
+    SendNotify({ 
+        type = arg2 or 'info', 
+        message = arg1, 
+        duration = arg3, 
+        title = arg4 
+    })
 end)
 
 RegisterNetEvent('realrpg_notify:notify', function(data)
